@@ -19,5 +19,8 @@
 			<attribute name="owner.project.facets" value="jst.web.jstl"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/asus-pc/MyEclipse 2015/plugins/com.genuitec.eclipse.server.embedded.tomcat.core_13.0.0.me201503191638/tomcat70/lib/websocket-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/asus-pc/MyEclipse 2015/plugins/com.genuitec.eclipse.server.embedded.tomcat.core_13.0.0.me201503191638/tomcat70/lib/tomcat7-websocket.jar"/>
+	<classpathentry kind="lib" path="C:/Users/asus-pc/Desktop/java-json.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>
