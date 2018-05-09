@@ -32,7 +32,8 @@ public class Endpoint {
 	// 定义一个集合，用于保存所有接入的WebSocket客户端
 	private static final CopyOnWriteArrayList<Endpoint> clientSet = new CopyOnWriteArrayList<Endpoint>();
 	// 定义一个成员变量，记录WebSocket客户端的聊天昵称
-	private String nickname;
+	private String tag;
+//	private String nickname;
 	private int opponent=-1;
 	//记录状态
 	// 定义一个成员变量，记录与WebSocket之间的会话
@@ -47,7 +48,7 @@ public class Endpoint {
 	// 当客户端连接进来时自动激发该方法
 	@OnOpen
 	public void start(Session session, EndpointConfig config) {
-		System.out.print("come");
+	//	System.out.print("come");
 		this.session = session;
 		//,@PathParam("param")String  param
 	//	System.out.println(session.getId()+"#############");
@@ -56,7 +57,7 @@ public class Endpoint {
 		clientSet.add(this);
 		
 		//broadcast("您好！玩家"+myId,myId);
-		System.out.println(myId);
+	//	System.out.println(myId);
 		if(waitSet.size()==0){
 			//broadcast("当前无可对战玩家，请等待", myId);
 			waitSet.add(this);
@@ -73,14 +74,11 @@ public class Endpoint {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		//	broadcast("玩家"+oppo.myId+"加入对战", oppo.myId);
-		//	broadcast("玩家"+oppo.myId+"加入对战", myId);
-		//	broadcast("玩家"+myId+"加入对战", oppo.myId);
-		//	broadcast("玩家"+myId+"加入对战", myId);
 		}
 	}
 	
 	public void JSONCreateCouple(int myid,  int hisid) throws JSONException{
+
 		JSONObject jsonObject = new JSONObject();  
 		jsonObject.put("tag", "pairing success");  
 		jsonObject.put("whohost", "youhost");
@@ -115,9 +113,24 @@ public class Endpoint {
 	
 	// 每当收到客户端消息时自动激发该方法
 	@OnMessage
-	public void incoming(String message) {
+	public void incoming(String message) throws JSONException {
+		if(message.charAt(0)=='{'){
+			JSONcheck(message);
+		}
 		if(opponent!=-1)
 			broadcast(message, opponent);
+	}
+	//判断请求
+	public void JSONcheck(String jsonstr) throws JSONException{
+		JSONObject command= new JSONObject(jsonstr);
+		String value=command.getString("tag");
+		if(value=="register"){
+			
+		}
+		else if(value=="login"){
+			
+		}
+		
 	}
 	
 	
@@ -148,8 +161,8 @@ public class Endpoint {
 						client.session.close();
 						} catch (IOException e1) {
 						}
-						String message =new String( client.nickname+
-						"已经被断开了连接。");
+						//String message =new String( client.nickname+
+						//"已经被断开了连接。");
 							//broadcast(message);
 						}
 				break;
