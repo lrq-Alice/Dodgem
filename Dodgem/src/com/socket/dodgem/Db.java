@@ -40,4 +40,21 @@ public class Db {
     	rs.close();
         return flag;
 	}
+	public   String login(String myname, String pw)throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		  
+		  try {   
+			  String sql = "select * from usr where name="+myname+" and password="+pw ;//拼接进去
+			  ResultSet rs = stmt.executeQuery(sql);  //查询语句
+		   if(rs.next()){
+			   return rs.getString(2)+"登入成功";//第几列？？？
+		   }
+		   return "登录失败，用户名或密码错误";
+		   
+		  }catch (SQLException e) {
+		   return "登录异常";
+		  } finally {
+			  conn.close(); 
+		      stmt.close();
+		  }
+		 }
 }
