@@ -2,6 +2,9 @@ package com.socket.dodgem;
 
 
 import java.io.IOException;
+import com.socket.dodgem.Json;
+
+import java.sql.*;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -39,16 +42,14 @@ public class Endpoint {
 	// 定义一个成员变量，记录与WebSocket之间的会话
 	private Session session;
 	
-	
 	public Endpoint() {
 		this.myId = connectionIds.getAndIncrement();
 	}
 	
-	
 	// 当客户端连接进来时自动激发该方法
 	@OnOpen
 	public void start(Session session, EndpointConfig config) {
-	//	System.out.print("come");
+		System.out.print("come");
 		this.session = session;
 		//,@PathParam("param")String  param
 	//	System.out.println(session.getId()+"#############");
@@ -77,19 +78,6 @@ public class Endpoint {
 		}
 	}
 	
-	public void JSONCreateCouple(int myid,  int hisid) throws JSONException{
-
-		JSONObject jsonObject = new JSONObject();  
-		jsonObject.put("tag", "pairing success");  
-		jsonObject.put("whohost", "youhost");
-		broadcast(jsonObject.toString(), myid);
-		JSONObject jsonObject2 =new JSONObject();
-		jsonObject2.put("tag", "pairing success");  
-		jsonObject2.put("whohost", "hehost");
-		broadcast(jsonObject2.toString(), hisid);
-		
-	}
-	
 	// 当客户端断开连接时自动激发该方法
 	@OnClose
 	public void end() throws JSONException {
@@ -104,29 +92,29 @@ public class Endpoint {
 	
 	}
 	
-	public void JSONLeave(int myid) throws JSONException{
-		JSONObject jsonObject = new JSONObject();  
-		jsonObject.put("tag", "opponent left");  
-		broadcast(jsonObject.toString(), myid);
-	}
 	
 	
 	// 每当收到客户端消息时自动激发该方法
 	@OnMessage
-	public void incoming(String message) throws JSONException {
+	public void incoming(String message) throws JSONException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		System.out.print("incoming msg");
 		if(message.charAt(0)=='{'){
 			JSONcheck(message);
 		}
-		if(opponent!=-1)
-			broadcast(message, opponent);
+		else{
+			if(opponent!=-1)
+				broadcast(message, opponent);
+		}
 	}
 	//判断请求
-	public void JSONcheck(String jsonstr) throws JSONException{
+	public void JSONcheck(String jsonstr) throws JSONException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		JSONObject command= new JSONObject(jsonstr);
 		String value=command.getString("tag");
+		//tag==注册
 		if(value=="register"){
-			
+			Regi(command.getString("name"), command.getString("password"));
 		}
+		//tag==登陆
 		else if(value=="login"){
 			
 		}
@@ -201,5 +189,36 @@ public class Endpoint {
 		return (result.toString());
 	}
 
+	public void JSONLeave(int myid) throws JSONException{
+		JSONObject jsonObject = new JSONObject();  
+		jsonObject.put("tag", "opponent left");  
+		broadcast(jsonObject.toString(), myid);
+	}
 
+	
+	public void JSONCreateCouple(int myid,  int hisid) throws JSONException{
+
+		JSONObject jsonObject = new JSONObject();  
+		jsonObject.put("tag", "pairing success");  
+		jsonObject.put("whohost", "youhost");
+		broadcast(jsonObject.toString(), myid);
+		JSONObject jsonObject2 =new JSONObject();
+		jsonObject2.put("tag", "pairing success");  
+		jsonObject2.put("whohost", "hehost");
+		broadcast(jsonObject2.toString(), hisid);
+		
+	}
+
+	public void Regi(String myname, String pw) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, JSONException{
+		System.out.print("in database");
+		Db create=new Db();
+		int ret=create.CreateUsr(myname, pw);
+        //存在该用户，返回给用户一个错误信息
+        if(ret==1) tag="success";
+        else tag="fail";
+		JSONObject jsonObject = new JSONObject();  
+		jsonObject.put("tag", tag);  
+		broadcast(jsonObject.toString(), myId);
+        
+	}
 }

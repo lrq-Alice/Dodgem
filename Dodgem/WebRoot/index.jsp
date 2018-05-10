@@ -47,7 +47,6 @@ var sendMsg = function()
  	alert("!");
  }
  */
-
 document.onkeydown=function(event){
 	//sendMsg(event.keyCode);
 	if(event.keyCode==37||event.keyCode==38||event.keyCode==39||event.keyCode==40)
